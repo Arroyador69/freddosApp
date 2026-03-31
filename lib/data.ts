@@ -14,8 +14,10 @@ export const STORE = {
   name: "Freddo's",
   // MVP: coordenadas aproximadas (cámbialas por las reales cuando las tengas).
   // Esto se usa para notificaciones por proximidad (600m).
-  latitude: 36.7213,
-  longitude: -4.4214,
+  // Dirección: C. España, 23, 29640 Fuengirola, Málaga
+  // Coordenadas (referencia Fuengirola 29640): 36.5388398, -4.6233974
+  latitude: 36.5388398,
+  longitude: -4.6233974,
   radiusMeters: 600,
 } as const;
 
