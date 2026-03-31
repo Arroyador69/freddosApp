@@ -2,6 +2,42 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
+type KvStorage = {
+  getItem: (name: string) => Promise<string | null>;
+  setItem: (name: string, value: string) => Promise<void>;
+  removeItem: (name: string) => Promise<void>;
+};
+
+const memoryStore = new Map<string, string>();
+
+const safeStorage: KvStorage = {
+  async getItem(name) {
+    try {
+      const v = await AsyncStorage.getItem(name);
+      if (v != null) memoryStore.set(name, v);
+      return v ?? memoryStore.get(name) ?? null;
+    } catch {
+      return memoryStore.get(name) ?? null;
+    }
+  },
+  async setItem(name, value) {
+    memoryStore.set(name, value);
+    try {
+      await AsyncStorage.setItem(name, value);
+    } catch {
+      // Fallback a memoria (útil en entornos donde AsyncStorage no está disponible).
+    }
+  },
+  async removeItem(name) {
+    memoryStore.delete(name);
+    try {
+      await AsyncStorage.removeItem(name);
+    } catch {
+      // noop
+    }
+  },
+};
+
 export type TransactionType = 'earn' | 'redeem';
 
 export type Transaction = {
@@ -91,7 +127,7 @@ export const useAppStore = create<AuthState>()(
     }),
     {
       name: 'freddos-app-store',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => safeStorage),
       partialize: (s) => ({
         user: s.user,
         isStaffMode: s.isStaffMode,
