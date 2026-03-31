@@ -3,6 +3,26 @@ import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 
+export function BrandMark({ compact }: { compact?: boolean }) {
+  const scheme = useColorScheme();
+  const c = Colors[scheme ?? 'light'];
+  return (
+    <View style={styles.brandRow}>
+      <View style={[styles.brandDot, { backgroundColor: c.tint }]} />
+      <Text
+        style={[
+          styles.brandText,
+          {
+            color: c.text,
+            fontSize: compact ? 16 : 18,
+          },
+        ]}>
+        Freddo's
+      </Text>
+    </View>
+  );
+}
+
 export function Card({
   children,
   style,
@@ -76,6 +96,21 @@ export function Pill({
 }
 
 const styles = StyleSheet.create({
+  brandRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  brandDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 999,
+  },
+  brandText: {
+    fontFamily: 'SpaceMono',
+    fontWeight: '700',
+    letterSpacing: 0.8,
+  },
   card: {
     borderWidth: 1,
     borderRadius: 18,

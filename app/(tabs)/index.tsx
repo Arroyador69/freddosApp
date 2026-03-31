@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
-import { Card, Pill, PrimaryButton, SectionTitle } from '@/components/FreddosUI';
+import { BrandMark, Card, Pill, PrimaryButton, SectionTitle } from '@/components/FreddosUI';
 import { REWARDS } from '@/lib/data';
 import { useAppStore } from '@/lib/store';
 import { router } from 'expo-router';
@@ -23,6 +23,7 @@ export default function HomeScreen() {
   return (
     <View style={[styles.container, { backgroundColor: c.background }]}>
       <View style={styles.header}>
+        <BrandMark compact />
         <Text style={[styles.kicker, { color: c.text }]}>Not the typical.</Text>
         <Text style={[styles.title, { color: c.text }]}>Hola, {user?.name}</Text>
       </View>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
-import { Card, PrimaryButton } from '@/components/FreddosUI';
+import { BrandMark, Card, PrimaryButton } from '@/components/FreddosUI';
 import { useAppStore } from '@/lib/store';
 import { Link, router } from 'expo-router';
 
@@ -17,6 +17,7 @@ export default function LoginScreen() {
   return (
     <View style={[styles.container, { backgroundColor: c.background }]}>
       <View style={styles.header}>
+        <BrandMark compact />
         <Text style={[styles.kicker, { color: c.text }]}>Not the typical, It's Freddo's</Text>
         <Text style={[styles.title, { color: c.text }]}>Accede</Text>
       </View>
