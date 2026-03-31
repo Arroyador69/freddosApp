@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { Card, PrimaryButton, SectionTitle } from '@/components/FreddosUI';
@@ -26,19 +26,23 @@ export default function StaffScreen() {
   const isStaffMode = useAppStore((s) => s.isStaffMode);
   const earnPoints = useAppStore((s) => s.earnPoints);
 
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [permission, requestPermission] = useCameraPermissions();
   const [scannedUserId, setScannedUserId] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
+      if (!permission) return;
+      if (!permission.granted && permission.canAskAgain) {
+        await requestPermission();
+      }
     })();
-  }, []);
+  }, [permission, requestPermission]);
+
+  const hasPermission = permission?.granted ?? false;
 
   const header = useMemo(() => {
     if (!isStaffMode) return 'Activa "Modo staff" en Perfil';
-    if (hasPermission === false) return 'Permiso de cámara denegado';
+    if (!hasPermission) return 'Permiso de cámara denegado';
     return 'Escanea el QR del cliente';
   }, [hasPermission, isStaffMode]);
 
@@ -66,10 +70,11 @@ export default function StaffScreen() {
 
       {hasPermission ? (
         <View style={[styles.scannerFrame, { borderColor: c.border }]}>
-          <BarCodeScanner
+          <CameraView
             style={StyleSheet.absoluteFillObject}
-            onBarCodeScanned={({ data }) => {
-              const payload = tryParsePayload(data);
+            barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+            onBarcodeScanned={(result) => {
+              const payload = tryParsePayload(result.data);
               if (!payload?.userId) return;
               setScannedUserId(payload.userId);
             }}
@@ -78,8 +83,10 @@ export default function StaffScreen() {
       ) : (
         <Card>
           <Text style={[styles.body, { color: c.text }]}>
-            Necesitamos permiso de cámara para escanear QR.
+            Necesitamos permiso de cámara para escanear QR. Si lo has denegado, actívalo en Ajustes.
           </Text>
+          <View style={{ height: 14 }} />
+          <PrimaryButton label="Pedir permiso" onPress={() => requestPermission()} />
         </Card>
       )}
 
